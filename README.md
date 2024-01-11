@@ -9,4 +9,4 @@ This repository contains the starter code for many different projects. They are 
 * `prove` - Starter projects for each of the prove Developer projects.
 * `final` - Starter projects for final project.
 
-I made come changes here. FYI just this line changes
+I made another changes here. FYI just this line changes
