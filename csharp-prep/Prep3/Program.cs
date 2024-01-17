@@ -5,12 +5,12 @@ class Program
     static void Main(string[] args)
     {
         // For Parts 1 and 2, where the user specified the number...
-        Console.Write("What is the magic number? ");
-        int magicNumber = int.Parse(Console.ReadLine());
+        //Console.Write("What is the magic number? ");
+        //int magicNumber = int.Parse(Console.ReadLine());
         
         // For Part 3, where we use a random number
-        //Random randomGenerator = new Random();
-        //int magicNumber = randomGenerator.Next(1, 10);
+        Random randomGenerator = new Random();
+        int magicNumber = randomGenerator.Next(1, 10);
 
         int guess = -1;
 
