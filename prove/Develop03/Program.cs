@@ -21,7 +21,11 @@ class Program
             string userInput = Console.ReadLine();
 
             if (userInput.ToLower() == "quit")
+            {
+                // User decided to quit, display the correct answer
+                DisplayCorrectAnswer(scripture);
                 break;
+            }
 
             // Hide a few random words
             scripture.HideRandomWords();
@@ -35,29 +39,35 @@ class Program
         Console.Clear();
         Console.WriteLine($"{scripture.Reference} {scripture.DisplayText}");
     }
+    //Exceed Expectations: This displays the whole chapter back to user when user types "quit" instead of having to run the program again to see the scripture
+    static void DisplayCorrectAnswer(Scripture scripture)
+    {
+        Console.Clear();
+        Console.WriteLine($"\nScripture: {scripture.DisplayCorrectAnswer()}");
+    }
 }
 
 class Scripture
 {
-    private readonly Reference reference;
-    private readonly List<Word> words;
+    private readonly Reference _reference;
+    private readonly List<Word> _words;
 
-    public bool IsCompletelyHidden => words.All(word => word._isHidden);
+    public bool IsCompletelyHidden => _words.All(word => word._isHidden);
 
-    public string Reference => reference.ToString();
+    public string Reference => _reference.ToString();
 
     public string DisplayText
     {
         get
         {
-            return string.Join(" ", words.Select(word => word._isHidden ? "_____" : word._text));
+            return string.Join(" ", _words.Select(word => word._isHidden ? "_____" : word._text));
         }
     }
 
     public Scripture(string referenceText, string scriptureText)
     {
-        reference = new Reference(referenceText);
-        words = CreateWordList(scriptureText);
+        _reference = new Reference(referenceText);
+        _words = CreateWordList(scriptureText);
     }
 
     private List<Word> CreateWordList(string scriptureText)
@@ -77,18 +87,23 @@ class Scripture
     {
         Random random = new Random();
 
-        // hide three words at a time
-        int numberToHide = Math.Min(3, words.Count(word => !word._isHidden));
+        // Hide three words at a time
+        int _numberToHide = Math.Min(3, _words.Count(word => !word._isHidden));
 
         // Select random words to hide
-        var wordsIndices = Enumerable.Range(0, words.Count).Where(i => !words[i]._isHidden).ToList();
-        var indicesToHide = wordsIndices.OrderBy(x => random.Next()).Take(numberToHide);
+        var wordsIndices = Enumerable.Range(0, _words.Count).Where(i => !_words[i]._isHidden).ToList();
+        var indicesToHide = wordsIndices.OrderBy(x => random.Next()).Take(_numberToHide);
 
         // Hide selected words
         foreach (var index in indicesToHide)
         {
-            words[index].Hide();
+            _words[index].Hide();
         }
+    }
+
+    public string DisplayCorrectAnswer()
+    {
+        return string.Join(" ", _words.Select(word => word._text));
     }
 }
 
@@ -97,7 +112,7 @@ class Reference
     public string _book { get; }
     public int _chapter { get; }
     public int _verse { get; }
-    public int _endverse { get; }
+    public int _endVerse { get; }
 
     public Reference(string reference)
     {
@@ -109,7 +124,7 @@ class Reference
             _chapter = int.Parse(parts[1].Split(':')[0]);
             string[] verses = parts[2].Split('-');
             _verse = int.Parse(verses[0]);
-            _endverse = verses.Length > 1 ? int.Parse(verses[1]) : _verse;
+            _endVerse = verses.Length > 1 ? int.Parse(verses[1]) : _verse;
         }
         else if (parts.Length == 2)
         {
@@ -118,7 +133,7 @@ class Reference
             _chapter = int.Parse(verses[0]);
             string[] verseNumbers = verses[1].Split('-');
             _verse = int.Parse(verseNumbers[0]);
-            _endverse = verseNumbers.Length > 1 ? int.Parse(verseNumbers[1]) : _verse;
+            _endVerse = verseNumbers.Length > 1 ? int.Parse(verseNumbers[1]) : _verse;
         }
     }
 
@@ -131,11 +146,10 @@ class Reference
         }
         else
         {
-            return $"{_chapter}:{_verse}-{_endverse}";
+            return $"{_chapter}:{_verse}-{_endVerse}";
         }
     }
 }
-
 
 class Word
 {
