@@ -66,55 +66,88 @@ class GoalManager
         return _score;
     }
 
-    public void CreateGoal()
+     public void CreateGoal()
     {
-        Console.WriteLine("");
-        Console.WriteLine("Select the type of goal:");
+        Console.WriteLine("Select the type of goal to create:");
         Console.WriteLine("1. Simple Goal");
         Console.WriteLine("2. Eternal Goal");
         Console.WriteLine("3. Checklist Goal");
-        Console.WriteLine("");
-
         Console.Write("Enter your choice: ");
-        string choice = Console.ReadLine();
+
+        if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > 3)
+        {
+            Console.WriteLine("Invalid choice.");
+            return;
+        }
 
         Console.Write("Enter the name of your goal: ");
         string name = Console.ReadLine();
 
-        Console.Write("Enter a short description: ");
+        Console.Write("Enter a short description of your goal: ");
         string description = Console.ReadLine();
 
         Console.Write("Enter the amount of points associated with this goal: ");
-        int _Points;
-        Console.WriteLine("");
-        while (!int.TryParse(Console.ReadLine(), out _Points))
+        if (!int.TryParse(Console.ReadLine(), out int points))
         {
-            Console.WriteLine("Invalid input. Please enter a valid integer.");
-            Console.Write("Enter the amount of points associated with this goal: ");
+            Console.WriteLine("Invalid points. Please enter a valid number.");
+            return;
         }
 
+        int totalTimes = 0;
+        int bonusScore = 0;
+
+        if (choice == 3) // If the user selects a checklist goal
+        {
+            Console.Write("Enter the total number of times to complete this goal: ");
+            if (!int.TryParse(Console.ReadLine(), out totalTimes) || totalTimes <= 0)
+            {
+                Console.WriteLine("Invalid total times. Please enter a valid number greater than 0.");
+                return;
+            }
+
+            Console.Write("Enter the bonus score (if any) for completing this goal: ");
+            if (!int.TryParse(Console.ReadLine(), out bonusScore))
+            {
+                Console.WriteLine("Invalid bonus score. Please enter a valid number.");
+                return;
+            }
+        }
+
+        //Exceedind Expectations - This method is added to ask user to confirm the creation of the goal. This is useful incase the user made a mistake in one of the steps creating a goal
+        Goal newGoal;
         switch (choice)
         {
-            case "1":
-                _goals.Add(new SimpleGoal(name, description, _Points));
+            case 1:
+                newGoal = new SimpleGoal(name, description, points);
                 break;
-            case "2":
-                _goals.Add(new EternalGoal(name, description, _Points));
+            case 2:
+                newGoal = new EternalGoal(name, description, points);
                 break;
-            case "3":
-                Console.Write("Enter the total number of times to complete the event: ");
-                int totalTimes;
-                while (!int.TryParse(Console.ReadLine(), out totalTimes))
-                {
-                    Console.WriteLine("Invalid input. Please enter a valid integer.");
-                    Console.Write("Enter the total number of times to complete the event: ");
-                }
-                _goals.Add(new ChecklistGoal(name, description, _Points, totalTimes));
+            case 3:
+                newGoal = new ChecklistGoal(name, description, points, totalTimes);
                 break;
             default:
                 Console.WriteLine("Invalid choice.");
-                break;
+                return;
         }
+
+        Console.WriteLine("Goal created successfully:");
+        newGoal.Display();
+        Console.WriteLine("");
+
+        Console.Write("Do you want to confirm the creation of this goal? (Yes/No): ");
+        string confirmation = Console.ReadLine().ToLower();
+
+        if (confirmation != "yes")
+        {
+            Console.WriteLine("Goal creation cancelled.");
+            Console.WriteLine("");
+            return;
+        }
+
+        _goals.Add(newGoal);
+        Console.WriteLine("Goal added to the list.");
+        Console.WriteLine("");
     }
 
     public void ListGoals()
@@ -236,6 +269,7 @@ public void LoadGoals()
     }
 
     Console.WriteLine($"Goals loaded from {filename} successfully!");
+    Console.WriteLine("");
 }
 
 
